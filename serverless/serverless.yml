@@ -2,11 +2,13 @@ service: serverless
 frameworkVersion: "3"
 
 custom:
-  stage: dev
+  stage: ${opt:stage, 'dev'}
+  HASURA_GRAPHQL_URL: ${file(./env.yml):HASURA_GRAPHQL_URL}
+  HASURA_ADMIN_SECRET:  ${file(./env.yml):HASURA_ADMIN_SECRET}
 
 provider:
   name: aws
-  runtime: nodejs18.x # Update Node.js runtime to a supported version
+  runtime: nodejs18.x
 
   environment:
     user_pool_id: 
@@ -24,6 +26,9 @@ provider:
 functions:
   addTodo:
     handler: lambdas/addTodo.handler
+    environment:
+      HASURA_GRAPHQL_URL: ${self:custom.HASURA_GRAPHQL_URL}
+      HASURA_ADMIN_SECRET: ${self:custom.HASURA_ADMIN_SECRET}
     events:
       - http:
           path: todo
@@ -43,6 +48,9 @@ functions:
 
   editTodo:
     handler: lambdas/editTodo.handler
+    environment:
+      HASURA_GRAPHQL_URL: ${self:custom.HASURA_GRAPHQL_URL}
+      HASURA_ADMIN_SECRET: ${self:custom.HASURA_ADMIN_SECRET}
     events:
       - http:
           path: todo/{ID}
@@ -62,6 +70,9 @@ functions:
 
   deleteTodo:
     handler: lambdas/deleteTodo.handler
+    environment:
+      HASURA_GRAPHQL_URL: ${self:custom.HASURA_GRAPHQL_URL}
+      HASURA_ADMIN_SECRET: ${self:custom.HASURA_ADMIN_SECRET}
     events:
       - http:
           path: todo/{ID}

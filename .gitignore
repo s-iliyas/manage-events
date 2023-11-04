@@ -13,9 +13,10 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # package directories
 node_modules
 jspm_packages
-
+package-lock.json
 # Serverless directories
 .serverless
+env.yml
 
 # Runtime data
 pids
