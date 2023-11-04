@@ -1,0 +1,134 @@
+service: serverless
+frameworkVersion: "3"
+
+custom:
+  stage: dev
+
+provider:
+  name: aws
+  runtime: nodejs18.x # Update Node.js runtime to a supported version
+
+  environment:
+    user_pool_id: 
+      Ref: UserPool
+    client_id: 
+      Ref: UserClient
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "cognito-idp:AdminInitiateAuth"
+        - "cognito-idp:AdminRespondToAuthChallenge"
+      Resource: "*"
+
+functions:
+  addTodo:
+    handler: lambdas/addTodo.handler
+    events:
+      - http:
+          path: todo
+          method: post
+          cors:
+            origins:
+              - http://localhost:3000
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+          authorizer: 
+            type: COGNITO_USER_POOLS
+            identitySource: method.request.header.Authorization
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  editTodo:
+    handler: lambdas/editTodo.handler
+    events:
+      - http:
+          path: todo/{ID}
+          method: post
+          cors:
+            origins:
+              - http://localhost:3000
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+          authorizer: 
+            type: COGNITO_USER_POOLS
+            identitySource: method.request.header.Authorization
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+  deleteTodo:
+    handler: lambdas/deleteTodo.handler
+    events:
+      - http:
+          path: todo/{ID}
+          method: delete
+          cors:
+            origins:
+              - http://localhost:3000
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+          authorizer: 
+            type: COGNITO_USER_POOLS
+            identitySource: method.request.header.Authorization
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:custom.stage}-serverless-user-pool
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+        AutoVerifiedAttributes: ["email"]
+
+    UserClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:custom.stage}-serverless-user-client
+        GenerateSecret: false
+        UserPoolId:
+          Ref: UserPool
+        AccessTokenValidity: 86400
+        IdTokenValidity: 86400 
+        TokenValidityUnits:
+          AccessToken: "seconds"
+          IdToken: "seconds"
+        ExplicitAuthFlows:
+          - "ADMIN_NO_SRP_AUTH"
+          
+    IdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${self:custom.stage}-serverless-identity-pool
+        AllowUnauthenticatedIdentities: true
+        CognitoIdentityProviders: 
+          - ClientId:
+              Ref: UserClient
+            ProviderName:
+              Fn::GetAtt: [ "UserPool", "ProviderName" ]
+
+    ApiGatewayAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: CognitoUserPool
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ProviderARNs:
+          - Fn::GetAtt:
+              - UserPool
+              - Arn
