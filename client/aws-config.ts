@@ -6,7 +6,7 @@ const awsConfig = {
     region: process.env.NEXT_PUBLIC_AWS_REGION,
     userPoolId: process.env.NEXT_PUBLIC_AWS_COGNITO_USERPOOL_ID,
     userPoolWebClientId:
-      process.env.NEXT_PUBLIC_AWS_COGNITO_USERPOOL_WEB_CLIENT_ID,
+      process.env.NEXT_PUBLIC_AWS_COGNITO_USERPOOL_CLIENT_ID,
   },
   API: {
     endpoints: [

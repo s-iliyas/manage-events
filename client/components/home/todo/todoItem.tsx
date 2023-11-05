@@ -22,7 +22,7 @@ const TodoItem = ({ todo }: { todo: TodoType }) => {
     try {
       const res = await API.del(
         `${process.env.NEXT_PUBLIC_AWS_API_GATEWAY_API_NAME}`,
-        `/dev/todo${todo?.id ? `/${todo.id}` : ""}`,
+        `/todo${todo?.id ? `/${todo.id}` : ""}`,
         {
           headers: {
             "Content-Type": "application/json",

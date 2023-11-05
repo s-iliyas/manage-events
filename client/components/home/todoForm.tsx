@@ -82,7 +82,7 @@ const TodoForm = () => {
     try {
       const res = await API.post(
         `${process.env.NEXT_PUBLIC_AWS_API_GATEWAY_API_NAME}`,
-        `/dev/todo${todo?.id ? `/${todo.id}` : ""}`,
+        `/todo${todo?.id ? `/${todo.id}` : ""}`,
         {
           body: data,
           headers: {

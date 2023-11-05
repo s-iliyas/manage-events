@@ -29,7 +29,7 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_GRAPHQL_URL}`,
+        `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`,
         {
           query: `
             query getTodos {
