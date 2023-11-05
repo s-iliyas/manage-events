@@ -15,7 +15,6 @@ export interface TodoType {
 
 export interface User {
   username: string;
-  accessToken: string;
 }
 
 export interface StoreType {

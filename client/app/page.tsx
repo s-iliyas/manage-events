@@ -10,9 +10,11 @@ import Loader from "@/components/ui/loader";
 import { TodoContext } from "@/contexts/TodoProvider";
 import TodoList from "@/components/home/todo/todoList";
 import useCustomMessage from "@/hooks/useCustomMessage";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const user = useAuth();
+  const { push } = useRouter();
 
   const { setUserData } = useStore((store) => ({
     setUserData: store.setUserData,
@@ -60,19 +62,21 @@ export default function Home() {
   };
 
   const validateSession = async () => {
-    if (!user?.username) {
-      window.location.href = "/login";
-    } else {
-      try {
-        const sessionData = await Auth.currentSession();
-        setUserData({
-          username: user?.username,
-          accessToken: sessionData?.getAccessToken()?.getJwtToken()?.toString(),
-        });
-        getTodos();
-      } catch (err: any) {
-        error(err?.message);
-      }
+    try {
+      const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+      !token && push("/login");
+    } catch (err) {
+      setTimeout(() => {
+        push("/login");
+      }, 2000);
+    }
+    try {
+      setUserData({
+        username: user?.username,
+      });
+      getTodos();
+    } catch (err: any) {
+      error(err?.message);
     }
   };
 
@@ -82,7 +86,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div className="flex items-center justify-center gap-2 min-h-[40rem]">
       {contextHolder}
       {loading ? (
         <Loader />

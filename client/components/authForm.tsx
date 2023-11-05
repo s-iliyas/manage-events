@@ -41,7 +41,7 @@ const AuthForm = ({ type }: { type: "signUp" | "signIn" }) => {
       await Auth[type](authData);
       if (type === "signUp") {
         setAuthSuccess(true);
-      }else{
+      } else {
         push("/");
       }
     } catch (err: any) {
@@ -77,9 +77,14 @@ const AuthForm = ({ type }: { type: "signUp" | "signIn" }) => {
   };
 
   return (
-    <form className="flex flex-col max-w-[30em] min-h-screen mx-auto p-5 space-y-5 justify-center items-center">
+    <form className="flex flex-col max-w-[30em] min-h-[40rem] mx-auto p-5 space-y-5 justify-center items-center">
       {contextHolder}
       <Heading title={type === "signUp" ? "Sign Up" : "Login"} />
+      <small>
+        {type === "signUp"
+          ? "Please login first to manage events."
+          : "User should have an account to manage events."}
+      </small>
       {!authSuccess ? (
         <>
           <div className="flex flex-col w-full">

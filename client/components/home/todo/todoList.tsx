@@ -16,7 +16,7 @@ const TodoList = ({
   setTodo: any;
 }) => {
   return (
-    <section className="flex flex-col md:w-[70%] w-full justify-center items-center gap-4">
+    <section className="flex flex-col md:w-[70%] w-full justify-start min-h-[40rem] items-center gap-4">
       <br />
       <Heading title="Manage Your Todo List" />
       <button
