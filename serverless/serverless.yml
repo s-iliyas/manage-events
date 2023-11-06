@@ -93,6 +93,15 @@ functions:
           pool: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_NAME}
           trigger: PreTokenGeneration
           existing: true
+  
+  syncUsers:
+    handler: lambdas/syncUsers.handler
+    name: ${self:custom.stage}-${self:custom.env.SYNC_USERS_FUNCTION_NAME}
+    events:
+      - cognitoUserPool:
+          pool: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_NAME}
+          trigger: PostAuthentication
+          existing: true
 
 resources:
   Resources:
