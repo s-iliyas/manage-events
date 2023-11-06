@@ -6,7 +6,7 @@ This repository contains two projects: a serverless Todo app with AWS Cognito au
 
 This project is a serverless Todo application built using the Serverless Framework and AWS Cognito for authentication.
 
-Please refer to the `server/README.md` file for detailed instructions on setting up and deploying the serverless Todo app with AWS Cognito authentication.
+Please refer to the `serverless/README.md` file for detailed instructions on setting up and deploying the serverless Todo app with AWS Cognito authentication.
 
 ---
 
