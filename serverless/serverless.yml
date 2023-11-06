@@ -3,14 +3,20 @@ frameworkVersion: "3"
 
 custom:
   stage: ${opt:stage, 'dev'}
+  env: ${file(./env.yml):}
+
+package:
+  individually: true
+
+plugins:
+  - serverless-plugin-typescript
 
 provider:
   name: aws
   runtime: nodejs18.x
   environment:
-    HASURA_GRAPHQL_URL: ${file(./env.yml):HASURA_GRAPHQL_URL}
-    HASURA_ADMIN_SECRET:  ${file(./env.yml):HASURA_ADMIN_SECRET}
-
+    HASURA_GRAPHQL_URL: ${self:custom.env.HASURA_GRAPHQL_URL}
+    HASURA_ADMIN_SECRET: ${self:custom.env.HASURA_ADMIN_SECRET}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -21,6 +27,7 @@ provider:
 functions:
   addTodo:
     handler: lambdas/addTodo.handler
+    name: ${self:custom.stage}-${self:custom.env.ADD_TODO_FUNCTION_NAME}
     events:
       - http:
           path: todo
@@ -32,7 +39,7 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: true
-          authorizer: 
+          authorizer:
             type: COGNITO_USER_POOLS
             identitySource: method.request.header.Authorization
             authorizerId:
@@ -40,6 +47,7 @@ functions:
 
   editTodo:
     handler: lambdas/editTodo.handler
+    name: ${self:custom.stage}-${self:custom.env.EDIT_TODO_FUNCTION_NAME}
     events:
       - http:
           path: todo/{ID}
@@ -51,7 +59,7 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: true
-          authorizer: 
+          authorizer:
             type: COGNITO_USER_POOLS
             identitySource: method.request.header.Authorization
             authorizerId:
@@ -59,6 +67,7 @@ functions:
 
   deleteTodo:
     handler: lambdas/deleteTodo.handler
+    name: ${self:custom.stage}-${self:custom.env.DELETE_TODO_FUNCTION_NAME}
     events:
       - http:
           path: todo/{ID}
@@ -70,18 +79,27 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: true
-          authorizer: 
+          authorizer:
             type: COGNITO_USER_POOLS
             identitySource: method.request.header.Authorization
             authorizerId:
               Ref: ApiGatewayAuthorizer
+
+  jwtClaims:
+    handler: lambdas/jwtClaims.handler
+    name: ${self:custom.stage}-${self:custom.env.JWT_CLAIM_FUNCTION_NAME}
+    events:
+      - cognitoUserPool:
+          pool: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_NAME}
+          trigger: PreTokenGeneration
+          existing: true
 
 resources:
   Resources:
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:custom.stage}-serverless-user-pool
+        UserPoolName: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_NAME}
         Schema:
           - Name: email
             Required: true
@@ -94,28 +112,28 @@ resources:
     UserClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
-        ClientName: ${self:custom.stage}-serverless-user-client
+        ClientName: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_CLIENT_NAME}
         GenerateSecret: false
         UserPoolId:
           Ref: UserPool
         AccessTokenValidity: 86400
-        IdTokenValidity: 86400 
+        IdTokenValidity: 86400
         TokenValidityUnits:
           AccessToken: "seconds"
           IdToken: "seconds"
         ExplicitAuthFlows:
           - "ADMIN_NO_SRP_AUTH"
-          
+
     IdentityPool:
       Type: AWS::Cognito::IdentityPool
       Properties:
-        IdentityPoolName: ${self:custom.stage}-serverless-identity-pool
+        IdentityPoolName: ${self:custom.stage}-${self:custom.env.AWS_IDENTITY_POOL_NAME}
         AllowUnauthenticatedIdentities: true
-        CognitoIdentityProviders: 
+        CognitoIdentityProviders:
           - ClientId:
               Ref: UserClient
             ProviderName:
-              Fn::GetAtt: [ "UserPool", "ProviderName" ]
+              Fn::GetAtt: ["UserPool", "ProviderName"]
 
     ApiGatewayAuthorizer:
       Type: AWS::ApiGateway::Authorizer

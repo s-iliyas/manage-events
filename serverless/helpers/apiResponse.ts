@@ -1,4 +1,4 @@
-module.exports.apiResponse = {
+export const apiResponse = {
   _200(data = {}) {
     return {
       statusCode: 200,
