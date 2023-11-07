@@ -1,7 +1,6 @@
 "use client";
 
 import * as yup from "yup";
-import { API, Auth } from "aws-amplify";
 import { Checkbox, Input, Modal } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext, useEffect, useState } from "react";
@@ -11,6 +10,8 @@ import Heading from "../ui/heading";
 import { TodoFormInput } from "@/types";
 import { TodoContext } from "@/contexts/TodoProvider";
 import useCustomMessage from "@/hooks/useCustomMessage";
+import editTodoApi from "@/utils/editTodoApi";
+import addTodoApi from "@/utils/addTodoApi";
 
 // Using custom test method
 function isValidDueDate(value: any): any {
@@ -80,19 +81,9 @@ const TodoForm = () => {
 
     setLoading(true);
     try {
-      const res = await API.post(
-        `${process.env.NEXT_PUBLIC_AWS_API_GATEWAY_API_NAME}`,
-        `/todo${todo?.id ? `/${todo.id}` : ""}`,
-        {
-          body: data,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${(await Auth.currentSession())
-              .getIdToken()
-              .getJwtToken()}`,
-          },
-        }
-      );
+      const res = todo?.id
+        ? await editTodoApi(data, todo?.id)
+        : await addTodoApi(data);
       setTodos([...todos.filter((x) => x.id !== todo?.id), res]);
     } catch (err: any) {
       error(err?.message || "An error occurred while processing your request.");

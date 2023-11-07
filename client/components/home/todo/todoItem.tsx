@@ -5,8 +5,8 @@ import { TodoContext } from "@/contexts/TodoProvider";
 import useCustomMessage from "@/hooks/useCustomMessage";
 
 import { Checkbox } from "antd";
-import { API, Auth } from "aws-amplify";
 import { useContext, useState } from "react";
+import deleteTodoApi from "@/utils/deleteTodoApi";
 
 const TodoItem = ({ todo }: { todo: TodoType }) => {
   const { setTodo, setTodos, todos, setOpenTodoForm, setFormTitle } =
@@ -20,19 +20,7 @@ const TodoItem = ({ todo }: { todo: TodoType }) => {
     setLoading(true);
 
     try {
-      const res = await API.del(
-        `${process.env.NEXT_PUBLIC_AWS_API_GATEWAY_API_NAME}`,
-        `/todo${todo?.id ? `/${todo.id}` : ""}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${(await Auth.currentSession())
-              .getIdToken()
-              .getJwtToken()}`,
-          },
-        }
-      );
-
+      const res = await deleteTodoApi(todo?.id);
       if (res?.id === todo.id) {
         setTodos([...todos.filter((x) => x.id !== todo?.id)]);
       }

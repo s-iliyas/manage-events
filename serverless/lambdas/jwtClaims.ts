@@ -1,7 +1,4 @@
 export const handler = (event: any, _: any, callback: any) => {
-  console.log(
-    "ok working ********************************************************************************"
-  );
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {
