@@ -84,7 +84,7 @@ const TodoForm = () => {
       const res = todo?.id
         ? await editTodoApi(data, todo?.id)
         : await addTodoApi(data);
-      setTodos([...todos.filter((x) => x.id !== todo?.id), res]);
+      setTodos([...todos?.filter((x) => x.id !== todo?.id), res]);
     } catch (err: any) {
       error(err?.message || "An error occurred while processing your request.");
     } finally {

@@ -22,7 +22,7 @@ const TodoItem = ({ todo }: { todo: TodoType }) => {
     try {
       const res = await deleteTodoApi(todo?.id);
       if (res?.id === todo.id) {
-        setTodos([...todos.filter((x) => x.id !== todo?.id)]);
+        setTodos([...todos?.filter((x) => x.id !== todo?.id)]);
       }
     } catch (err: any) {
       error(err?.message || "An error occurred while processing your request.");

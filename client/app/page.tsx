@@ -29,6 +29,7 @@ export default function Home() {
 
   const getTodos = async () => {
     setLoading(true);
+    const token = (await Auth.currentSession()).getIdToken().getJwtToken();
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`,
@@ -48,8 +49,7 @@ export default function Home() {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-hasura-admin-secret":
-              process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
