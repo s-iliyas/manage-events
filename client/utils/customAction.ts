@@ -10,14 +10,19 @@ const customAction = async ({
 }: TodoFormInput) => {
   try {
     const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;
+    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;    
     const response = await axios.post(
       graphqlEndpoint,
       {
         query: `
-          mutation CustomAction($dueDate: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
-            CustomAction(data: { dueDate: $dueDate, description: $description, title: $title, completed: $completed }) {
-                userId
+          mutation InsertTodoOne($dueDate: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
+            InsertTodoOne(dueDate: $dueDate, description: $description, title: $title, completed: $completed ) {
+              completed
+              description
+              dueDate
+              userId
+              id
+              title
             }
           }
         `,
@@ -30,7 +35,7 @@ const customAction = async ({
         },
       }
     );
-    return response?.data?.data?.insert_todos_one;
+    return response?.data;
   } catch (error: any) {
     throw new Error(error);
   }

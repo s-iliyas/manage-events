@@ -7,9 +7,16 @@ custom:
 
 package:
   individually: true
+  include:
+    - node_modules/**    
+  exclude:
+    - .git/**
+    - .gitignore
+    - .DS_Store
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-plugin-optimize
 
 provider:
   name: aws

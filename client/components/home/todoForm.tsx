@@ -12,6 +12,7 @@ import { TodoContext } from "@/contexts/TodoProvider";
 import useCustomMessage from "@/hooks/useCustomMessage";
 import editTodoApi from "@/utils/editTodoApi";
 import addTodoApi from "@/utils/addTodoApi";
+import customAction from "@/utils/customAction";
 
 // Using custom test method
 function isValidDueDate(value: any): any {
@@ -81,8 +82,11 @@ const TodoForm = () => {
 
     setLoading(true);
     try {
+      const userConfirm = window.confirm("Do you want use custom action?");
       const res = todo?.id
         ? await editTodoApi(data, todo?.id)
+        : userConfirm
+        ? await customAction(data)
         : await addTodoApi(data);
       setTodos([...todos?.filter((x) => x.id !== todo?.id), res]);
     } catch (err: any) {
