@@ -20,16 +20,14 @@ export default function Home() {
     setUserData: store.setUserData,
   }));
 
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   const { error, contextHolder } = useCustomMessage();
 
   const { setTodo, todos, setTodos, setOpenTodoForm, setFormTitle } =
     useContext(TodoContext);
 
-  const getTodos = async () => {
-    setLoading(true);
-    const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+  const getTodos = async (token: string) => {
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`,
@@ -54,29 +52,28 @@ export default function Home() {
         }
       );
       setTodos(res.data?.data?.todos);
-    } catch (err: any) {
-      error(err?.message);
-    } finally {
       setLoading(false);
+    } catch (err: any) {
+      throw new Error(err);
     }
   };
 
   const validateSession = async () => {
     try {
-      const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-      !token && push("/login");
-    } catch (err) {
+      const token = (await Auth.currentSession()).getIdToken().getJwtToken();      
+      if (token) {
+        setUserData({
+          username: user?.username,
+        });
+        getTodos(token);
+      } else {
+        push("/login");
+      }
+    } catch (err: any) {
       setTimeout(() => {
+        error(err?.message);
         push("/login");
       }, 2000);
-    }
-    try {
-      setUserData({
-        username: user?.username,
-      });
-      getTodos();
-    } catch (err: any) {
-      error(err?.message);
     }
   };
 

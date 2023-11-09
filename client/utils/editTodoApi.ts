@@ -5,33 +5,33 @@ import { TodoFormInput } from "@/types";
 
 const editTodoApi = async (
   { description, dueDate, title, completed = false }: TodoFormInput,
-  todoId: number
+  id: number
 ) => {
   try {
+    const token = (await Auth.currentSession()).getIdToken().getJwtToken();
     const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;
+    const variables = { description, dueDate, title, completed, id };
     const response = await axios.post(
       graphqlEndpoint,
       {
         query: `
-          mutation editTodo($todoId: Int!, $completed: Boolean = false, $description: String = "", $dueDate: String = "", $title: String = "") {
-            update_todos_by_pk(pk_columns: {id: $todoId}, _set: {completed: $completed, description: $description, dueDate: $dueDate, title: $title}){
-              completed
-              description
-              dueDate
-              userId
-              id
-              title
-            }
+        mutation UpdateTodoOne($title: String, $dueDate: String, $description: String, $completed: Boolean, $id: Int!) {
+          update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: $completed, description: $description, dueDate: $dueDate, title: $title}) {
+            completed
+            description
+            dueDate
+            id
+            title
+            userId
           }
+        }
         `,
-        variables: { description, dueDate, title, completed, todoId },
+        variables,
       },
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${(await Auth.currentSession())
-            .getIdToken()
-            .getJwtToken()}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );

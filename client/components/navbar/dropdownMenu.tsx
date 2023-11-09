@@ -28,7 +28,7 @@ const DropdownMenu = () => {
       className="flex items-center relative flex-row gap-1 cursor-pointer"
       onClick={toggleDropdown}
     >
-      <small>{user?.username}</small>
+      <small>{user?.username?.split('@')[0]}</small>
       <Image src={"/down.png"} alt="down arrow" width={10} height={10} />
       {isDropdownOpen && (
         <div className="absolute min-w-[10rem] top-full left-0 bg-white border rounded-md border-gray-200 p-2">

@@ -57,8 +57,8 @@ functions:
     name: ${self:custom.stage}-${self:custom.env.EDIT_TODO_FUNCTION_NAME}
     events:
       - http:
-          path: todo/{ID}
-          method: post
+          path: todo
+          method: put
           cors:
             origins:
               - http://localhost:3000
@@ -77,7 +77,7 @@ functions:
     name: ${self:custom.stage}-${self:custom.env.DELETE_TODO_FUNCTION_NAME}
     events:
       - http:
-          path: todo/{ID}
+          path: todo
           method: delete
           cors:
             origins:

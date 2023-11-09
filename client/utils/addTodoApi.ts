@@ -1,8 +1,6 @@
 import axios from "axios";
 import { Auth } from "aws-amplify";
-
 import { TodoFormInput } from "@/types";
-import getUserId from "./helpers/getUserId";
 
 const addTodoApi = async ({
   description,
@@ -12,36 +10,23 @@ const addTodoApi = async ({
 }: TodoFormInput) => {
   try {
     const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-    const userId = getUserId(token);
-    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;
+    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;    
     const response = await axios.post(
       graphqlEndpoint,
       {
         query: `
-          mutation InsertTodosOne(
-            $completed: Boolean = false,
-            $description: String = "",
-            $dueDate: String = "",
-            $title: String = "",
-            $userId: String = ""
-          ) {
-            insert_todos_one(object: {
-              completed: $completed,
-              description: $description,
-              dueDate: $dueDate,
-              title: $title,
-              userId: $userId
-            }) {
-              id
+          mutation InsertTodoOne($dueDate: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
+            InsertTodoOne(dueDate: $dueDate, description: $description, title: $title, completed: $completed ) {
               completed
               description
-              userId
-              title
               dueDate
+              userId
+              id
+              title
             }
           }
         `,
-        variables: { description, dueDate, title, completed, userId },
+        variables: { description, dueDate, title, completed },
       },
       {
         headers: {
@@ -50,7 +35,7 @@ const addTodoApi = async ({
         },
       }
     );
-    return response?.data?.data?.insert_todos_one;
+    return response?.data.data?.InsertTodoOne;
   } catch (error: any) {
     throw new Error(error);
   }

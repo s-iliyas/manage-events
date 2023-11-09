@@ -1,20 +1,20 @@
 import axios from "axios";
 import { Auth } from "aws-amplify";
 
-const deleteTodoApi = async (todoId: number) => {
+const deleteTodoApi = async (id: number) => {
   try {
     const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;
     const response = await axios.post(
       graphqlEndpoint,
       {
         query: `
-            mutation deleteTodo($todoId: Int!) {
-              delete_todos_by_pk(id: $todoId){
-                id
+              mutation DeleteTodoOne($id: Int!) {
+                delete_todos_by_pk(id: $id) {
+                  id
+                }
               }
-            }
             `,
-        variables: { todoId },
+        variables: { id },
       },
       {
         headers: {
