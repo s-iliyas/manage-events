@@ -40,12 +40,14 @@ export const handler = async (
     );
     return apiResponse._200(res?.data?.data?.insert_todos_one);
   } catch (error: any) {
-    return apiResponse._400({
+    const message = {
       message:
         error?.message ||
         error?.response?.data?.message ||
         error?.response?.data?.error ||
         "Insert Todo One Backend Error",
-    });
+    };
+    console.log(message);
+    return apiResponse._400(message);
   }
 };

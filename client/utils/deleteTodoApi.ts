@@ -9,7 +9,7 @@ const deleteTodoApi = async (id: number) => {
       {
         query: `
               mutation DeleteTodoOne($id: Int!) {
-                delete_todos_by_pk(id: $id) {
+                DeleteTodoOne(id: $id) {
                   id
                 }
               }
@@ -25,7 +25,7 @@ const deleteTodoApi = async (id: number) => {
         },
       }
     );
-    return response?.data?.data?.delete_todos_by_pk;
+    return response?.data?.data?.DeleteTodoOne;
   } catch (error: any) {
     throw new Error(error);
   }

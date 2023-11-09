@@ -16,7 +16,7 @@ const editTodoApi = async (
       {
         query: `
         mutation UpdateTodoOne($title: String, $dueDate: String, $description: String, $completed: Boolean, $id: Int!) {
-          update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: $completed, description: $description, dueDate: $dueDate, title: $title}) {
+          UpdateTodoOne(id: $id, completed: $completed, description: $description, dueDate: $dueDate, title: $title) {
             completed
             description
             dueDate
@@ -35,7 +35,7 @@ const editTodoApi = async (
         },
       }
     );
-    return response?.data?.data?.update_todos_by_pk;
+    return response?.data?.data?.UpdateTodoOne;
   } catch (error: any) {
     throw new Error(error);
   }

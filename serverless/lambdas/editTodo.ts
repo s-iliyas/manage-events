@@ -23,7 +23,6 @@ export const handler = async (
     const data = JSON.parse(`${event?.body}`);
     const variables = {
       ...data?.input,
-      userId: data?.["session_variables"]?.["x-hasura-user-id"],
     };
     const res = await axios.post(
       "https://hip-shad-68.hasura.app/v1/graphql",
@@ -40,12 +39,14 @@ export const handler = async (
     );
     return apiResponse._200(res?.data?.data?.update_todos_by_pk);
   } catch (error: any) {
-    return apiResponse._400({
+    const message = {
       message:
         error?.message ||
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        "Update Todo One Backend Error",
-    });
+        "Insert Todo One Backend Error",
+    };
+    console.log(message);
+    return apiResponse._400(message);
   }
 };
