@@ -37,7 +37,7 @@ export default function Home() {
               todos {
                 completed
                 description
-                dueDate
+                dueTime
                 id
                 title
               }

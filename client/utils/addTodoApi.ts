@@ -4,29 +4,29 @@ import { TodoFormInput } from "@/types";
 
 const addTodoApi = async ({
   description,
-  dueDate,
+  dueTime,
   title,
   completed = false,
 }: TodoFormInput) => {
   try {
     const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;    
+    const graphqlEndpoint = `${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`;
     const response = await axios.post(
       graphqlEndpoint,
       {
         query: `
-          mutation InsertTodoOne($dueDate: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
-            InsertTodoOne(dueDate: $dueDate, description: $description, title: $title, completed: $completed ) {
+          mutation InsertTodoOne($dueTime: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
+            InsertTodoOne(dueTime: $dueTime, description: $description, title: $title, completed: $completed ) {
               completed
               description
-              dueDate
+              dueTime
               userId
               id
               title
             }
           }
         `,
-        variables: { description, dueDate, title, completed },
+        variables: { description, dueTime, title, completed },
       },
       {
         headers: {

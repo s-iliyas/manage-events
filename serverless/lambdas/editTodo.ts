@@ -4,11 +4,11 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { apiResponse } from "../helpers/apiResponse";
 
 const HASURA_OPERATION = `
-  mutation UpdateTodoOne($title: String, $dueDate: String, $description: String, $completed: Boolean, $id: Int!) {
-    update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: $completed, description: $description, dueDate: $dueDate, title: $title}) {
+  mutation UpdateTodoOne($title: String, $dueTime: String, $description: String, $completed: Boolean, $id: Int!) {
+    update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: $completed, description: $description, dueTime: $dueTime, title: $title}) {
       completed
       description
-      dueDate
+      dueTime
       id
       title
       userId

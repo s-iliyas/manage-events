@@ -163,3 +163,8 @@ resources:
           - Fn::GetAtt:
               - UserPool
               - Arn
+
+    ReminderQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: reminderQueue

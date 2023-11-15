@@ -2,15 +2,15 @@ export type TodoFormInput = {
   title: string;
   description: string;
   completed?: boolean;
-  dueDate: string;
+  dueTime?: string;
 };
 
 export interface TodoType {
+  dueTime: string;
   id: number;
   title: string;
   completed: boolean;
   description: string;
-  dueDate: string;
 }
 
 export interface User {

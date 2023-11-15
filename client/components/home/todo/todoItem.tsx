@@ -42,7 +42,7 @@ const TodoItem = ({ todo }: { todo: TodoType }) => {
       </div>
       <div className="flex flex-row gap-2 items-center">
         <small>Due date:</small>
-        <small>{todo?.dueDate}</small>
+        <small>{todo?.dueTime}</small>
       </div>
       <div className="flex flex-wrap ml-auto gap-2 items-center">
         <button

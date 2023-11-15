@@ -12,31 +12,13 @@ import { TodoContext } from "@/contexts/TodoProvider";
 import useCustomMessage from "@/hooks/useCustomMessage";
 import editTodoApi from "@/utils/editTodoApi";
 import addTodoApi from "@/utils/addTodoApi";
-import customAction from "@/utils/customAction";
-
-// Using custom test method
-function isValidDueDate(value: any): any {
-  if (!value) {
-    return false;
-  }
-
-  const [date, month, year] = value?.split("-");
-  if (
-    !(Number(date) <= 31) ||
-    !(Number(month) <= 12) ||
-    !(year?.length === 4 && !Number.isNaN(Number(year)))
-  ) {
-    return false;
-  }
-  return true;
-}
+import DatePickerComponent from "../ui/datePicker";
 
 const schema = yup
   .object({
     title: yup.string().required(),
     description: yup.string().required(),
     completed: yup.boolean(),
-    dueDate: yup.string().required(),
   })
   .required();
 
@@ -59,9 +41,10 @@ const TodoForm = () => {
       completed: todo?.completed || false,
       title: todo?.title || "",
       description: todo?.description || "",
-      dueDate: todo?.dueDate || "",
     },
   });
+
+  const [dueTime, setDueTime] = useState<Date | null>(null);
 
   useEffect(() => {
     if (todo) {
@@ -69,22 +52,22 @@ const TodoForm = () => {
       setValue("completed", todo.completed || false);
       setValue("title", todo.title || "");
       setValue("description", todo.description || "");
-      setValue("dueDate", todo.dueDate || "");
+      todo.dueTime && setDueTime(new Date(todo.dueTime) || "");
     }
   }, [todo, setValue]);
 
   const onSubmit: SubmitHandler<TodoFormInput> = async (data) => {
-    const isValidDate = isValidDueDate(data.dueDate);
-    if (!isValidDate) {
-      error("Invalid Date! Format should be 'dd-mm-yyyy'");
-      return;
-    }
-
     setLoading(true);
     try {
       const res = todo?.id
-        ? await editTodoApi(data, todo?.id)
-        : await addTodoApi(data);
+        ? await editTodoApi(
+            { ...data, dueTime: dueTime?.toLocaleString() || todo.dueTime },
+            todo?.id
+          )
+        : await addTodoApi({
+            ...data,
+            dueTime: dueTime?.toLocaleString() || todo.dueTime,
+          });
       setTodos([...todos?.filter((x) => x.id !== todo?.id), res]);
     } catch (err: any) {
       error(err?.message || "An error occurred while processing your request.");
@@ -103,6 +86,7 @@ const TodoForm = () => {
       open={openTodoForm}
       onCancel={() => {
         setOpenTodoForm(false);
+        setDueTime(null);
       }}
       width={400}
       footer={[<button key={"cancel"}></button>]}
@@ -124,6 +108,13 @@ const TodoForm = () => {
           <small className="text-red-600">{errors.title?.message}</small>
         </div>
         <div className="flex flex-col">
+          <small>Due time:</small>
+          <DatePickerComponent
+            dueTime={dueTime || (todo.dueTime && new Date(todo.dueTime))}
+            setDueTime={setDueTime}
+          />
+        </div>
+        <div className="flex flex-col">
           <small>Description:</small>
           <Controller
             name="description"
@@ -137,17 +128,6 @@ const TodoForm = () => {
             )}
           />
           <small className="text-red-600">{errors.description?.message}</small>
-        </div>
-        <div className="flex flex-col">
-          <small>Due date:</small>
-          <Controller
-            name="dueDate"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} placeholder="dd-mm-yyyy" />
-            )}
-          />
-          <small className="text-red-600">{errors.dueDate?.message}</small>
         </div>
         <div className="flex flex-col">
           <div className="flex flex-row items-center gap-2">

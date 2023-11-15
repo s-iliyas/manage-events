@@ -18,7 +18,7 @@ const initialTodoState = {
   completed: false,
   title: "",
   description: "",
-  dueDate: "",
+  dueTime: "",
   id: 0,
 };
 

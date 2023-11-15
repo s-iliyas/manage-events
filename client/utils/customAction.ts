@@ -4,7 +4,7 @@ import { TodoFormInput } from "@/types";
 
 const customAction = async ({
   description,
-  dueDate,
+  dueTime,
   title,
   completed = false,
 }: TodoFormInput) => {
@@ -15,18 +15,18 @@ const customAction = async ({
       graphqlEndpoint,
       {
         query: `
-          mutation InsertTodoOne($dueDate: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
-            InsertTodoOne(dueDate: $dueDate, description: $description, title: $title, completed: $completed ) {
+          mutation InsertTodoOne($dueTime: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
+            InsertTodoOne(dueTime: $dueTime, description: $description, title: $title, completed: $completed ) {
               completed
               description
-              dueDate
+              dueTime
               userId
               id
               title
             }
           }
         `,
-        variables: { description, dueDate, title, completed },
+        variables: { description, dueTime, title, completed },
       },
       {
         headers: {

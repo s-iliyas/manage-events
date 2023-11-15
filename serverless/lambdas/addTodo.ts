@@ -4,10 +4,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { apiResponse } from "../helpers/apiResponse";
 
 const HASURA_OPERATION = `
-  mutation InsertTodoOne($title: String = "", $dueDate: String = "", $description: String = "", $completed: Boolean = false, $userId: String = "") {
-    insert_todos_one(object: {title: $title, dueDate: $dueDate, description: $description, completed: $completed, userId: $userId}) {
+  mutation InsertTodoOne($title: String = "", $dueTime: String = "", $description: String = "", $completed: Boolean = false, $userId: String = "") {
+    insert_todos_one(object: {title: $title, dueTime: $dueTime, description: $description, completed: $completed, userId: $userId}) {
       id
-      dueDate
+      dueTime
       completed
       userId
       description
