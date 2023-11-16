@@ -15,7 +15,7 @@ const addTodoApi = async ({
       graphqlEndpoint,
       {
         query: `
-          mutation InsertTodoOne($dueTime: String = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
+          mutation InsertTodoOne($dueTime: timestamptz = "", $description: String = "", $title: String = "", $completed: Boolean = false) {
             InsertTodoOne(dueTime: $dueTime, description: $description, title: $title, completed: $completed ) {
               completed
               description

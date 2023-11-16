@@ -24,11 +24,14 @@ provider:
   environment:
     HASURA_GRAPHQL_URL: ${self:custom.env.HASURA_GRAPHQL_URL}
     HASURA_ADMIN_SECRET: ${self:custom.env.HASURA_ADMIN_SECRET}
+    SQS_QUEUE_URL: { Ref: ReminderQueue }
   iamRoleStatements:
     - Effect: Allow
       Action:
         - "cognito-idp:AdminInitiateAuth"
         - "cognito-idp:AdminRespondToAuthChallenge"
+        - "sqs:SendMessage"  
+        - "sqs:ReceiveMessage"  
       Resource: "*"
 
 functions:
@@ -109,6 +112,20 @@ functions:
           pool: ${self:custom.stage}-${self:custom.env.AWS_USER_POOL_NAME}
           trigger: PostAuthentication
           existing: true
+
+  cronPushMessages:
+    handler: lambdas/cronPushMessages.handler
+    events:
+      - schedule: rate(60 minutes)
+
+  sendEmails:
+    handler: lambdas/sendEmails.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ReminderQueue
+              - Arn
 
 resources:
   Resources:

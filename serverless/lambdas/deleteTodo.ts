@@ -39,9 +39,9 @@ export const handler = async (
         error?.message ||
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        "Insert Todo One Backend Error",
+        "Delete Todo One Backend Error",
     };
-    console.log(message);
+    console.log(JSON.stringify(message));
     return apiResponse._400(message);
   }
 };

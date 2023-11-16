@@ -15,7 +15,7 @@ const editTodoApi = async (
       graphqlEndpoint,
       {
         query: `
-        mutation UpdateTodoOne($title: String, $dueTime: String, $description: String, $completed: Boolean, $id: Int!) {
+        mutation UpdateTodoOne($title: String, $dueTime: timestamptz, $description: String, $completed: Boolean, $id: Int!) {
           UpdateTodoOne(id: $id, completed: $completed, description: $description, dueTime: $dueTime, title: $title) {
             completed
             description

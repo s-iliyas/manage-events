@@ -61,12 +61,12 @@ const TodoForm = () => {
     try {
       const res = todo?.id
         ? await editTodoApi(
-            { ...data, dueTime: dueTime?.toLocaleString() || todo.dueTime },
+            { ...data, dueTime: dueTime?.toISOString() || todo.dueTime },
             todo?.id
           )
         : await addTodoApi({
             ...data,
-            dueTime: dueTime?.toLocaleString() || todo.dueTime,
+            dueTime: dueTime?.toISOString() || todo.dueTime,
           });
       setTodos([...todos?.filter((x) => x.id !== todo?.id), res]);
     } catch (err: any) {

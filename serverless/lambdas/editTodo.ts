@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { apiResponse } from "../helpers/apiResponse";
 
 const HASURA_OPERATION = `
-  mutation UpdateTodoOne($title: String, $dueTime: String, $description: String, $completed: Boolean, $id: Int!) {
+  mutation UpdateTodoOne($id: Int!, $completed: Boolean = false, $description: String = "", $dueTime: timestamptz = "", $title: String = "") {
     update_todos_by_pk(pk_columns: {id: $id}, _set: {completed: $completed, description: $description, dueTime: $dueTime, title: $title}) {
       completed
       description
@@ -44,9 +44,9 @@ export const handler = async (
         error?.message ||
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        "Insert Todo One Backend Error",
+        "Update Todo One Backend Error",
     };
-    console.log(message);
+    console.log(JSON.stringify(message));
     return apiResponse._400(message);
   }
 };

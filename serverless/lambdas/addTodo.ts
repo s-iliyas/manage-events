@@ -4,14 +4,14 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { apiResponse } from "../helpers/apiResponse";
 
 const HASURA_OPERATION = `
-  mutation InsertTodoOne($title: String = "", $dueTime: String = "", $description: String = "", $completed: Boolean = false, $userId: String = "") {
-    insert_todos_one(object: {title: $title, dueTime: $dueTime, description: $description, completed: $completed, userId: $userId}) {
+  mutation InsertTodoOne($completed: Boolean = false, $description: String = "", $userId: String = "", $title: String = "", $dueTime: timestamptz = "") {
+    insert_todos_one(object: {completed: $completed, description: $description, userId: $userId, title: $title, dueTime: $dueTime}) {
+      userId
+      title
       id
       dueTime
-      completed
-      userId
       description
-      title
+      completed
     }
   }
 `;
@@ -47,7 +47,7 @@ export const handler = async (
         error?.response?.data?.error ||
         "Insert Todo One Backend Error",
     };
-    console.log(message);
+    console.log(JSON.stringify(message));
     return apiResponse._400(message);
   }
 };
