@@ -21,9 +21,7 @@ export const handler = async (
               dueTime
               id
               title
-              user {
-                username
-              }
+              userId
             }
           }
         `,
@@ -42,25 +40,20 @@ export const handler = async (
 
     if (res?.data?.data?.todos?.length > 0) {
       interface Todo {
-        user: { username: string };
+        id: number;
         title: string;
         description: string;
         dueTime: string;
+        userId: string;
+        completed: boolean;
       }
-
       // Use map with Promise.all to wait for all sendMessage promises to resolve
       await Promise.all(
-        res.data.data.todos.map(async (element: Todo) => {
+        res.data.data.todos.map(async (todo: Todo) => {
           const params: AWS.SQS.SendMessageRequest = {
             QueueUrl: `${process.env.SQS_QUEUE_URL}`,
-            MessageBody: JSON.stringify({
-              title: element?.title,
-              description: element?.description,
-              dueTime: element?.dueTime,
-              username: element?.user?.username,
-            }),
+            MessageBody: JSON.stringify(todo),
           };
-
           await sqs.sendMessage(params).promise();
         })
       );
