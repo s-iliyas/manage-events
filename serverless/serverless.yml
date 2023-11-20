@@ -54,6 +54,34 @@ functions:
             identitySource: method.request.header.Authorization
             authorizerId:
               Ref: ApiGatewayAuthorizer
+  
+  aiAdminQuery:
+    handler: lambdas/aiAdminQuery.handler
+    name: ${self:custom.stage}-${self:custom.env.AI_ADMIN_QUERY_FUNCTION_NAME}
+    events:
+      - http:
+          path: admin/query
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            identitySource: method.request.header.Authorization
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
+    
+  aiUserQuery:
+    handler: lambdas/aiUserQuery.handler
+    name: ${self:custom.stage}-${self:custom.env.AI_USER_QUERY_FUNCTION_NAME}
+    events:
+      - http:
+          path: user/query
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            identitySource: method.request.header.Authorization
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   editTodo:
     handler: lambdas/editTodo.handler
